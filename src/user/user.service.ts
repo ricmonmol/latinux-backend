@@ -6,9 +6,20 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
-  create(userDto: UserDto): Promise<User> {
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private mail: string,
+  ) {}
+  async create(userDto: UserDto): Promise<User> {
     const createdUser = new this.userModel(userDto);
-    return createdUser.save();
+    return await createdUser.save();
+  }
+  async findAll(): Promise<User[]> {
+    const users = await this.userModel.find();
+    return users;
+  }
+  async find(mail: string): Promise<User> {
+    const user = await this.userModel.findOne({ where: { mail: mail } });
+    return user;
   }
 }
